@@ -30,48 +30,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+#region Module Import
+Import-Module (Join-Path $PSScriptRoot 'Modules/MuralMcp.psm1') -Force
+#endregion Module Import
+
 #region Functions
-
-function Import-MuralCredentials {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$FilePath
-    )
-
-    if (-not (Test-Path -Path $FilePath -PathType Leaf)) {
-        return
-    }
-
-    foreach ($line in Get-Content -Path $FilePath) {
-        $trimmed = $line.Trim()
-        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
-            continue
-        }
-
-        if ($trimmed -match '^(?:export\s+)?(?<name>MURAL_CLIENT_ID|MURAL_CLIENT_SECRET)=(?<value>.+)$') {
-            $name = $Matches.name
-            $value = $Matches.value.Trim()
-            if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
-                $value = $value.Substring(1, $value.Length - 2)
-            }
-
-            if ([string]::IsNullOrWhiteSpace((Get-Item -Path Env:$name -ErrorAction SilentlyContinue).Value)) {
-                Set-Item -Path Env:$name -Value $value
-            }
-        }
-    }
-}
-
-function Test-MuralBuildExists {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$BuildPath
-    )
-
-    return (Test-Path -Path $BuildPath -PathType Leaf)
-}
 
 function Invoke-StartMuralMcp {
     [CmdletBinding()]
@@ -89,7 +52,7 @@ function Invoke-StartMuralMcp {
         throw "Mural MCP is not installed at '$buildPath'. Run 'npm run mcp:setup:mural' first."
     }
 
-    if ([string]::IsNullOrWhiteSpace($env:MURAL_CLIENT_ID) -or [string]::IsNullOrWhiteSpace($env:MURAL_CLIENT_SECRET)) {
+    if (-not (Test-MuralCredentialsPresent)) {
         throw "Mural credentials are missing. Create '.mural-credentials' from '.mural-credentials.example' or set MURAL_CLIENT_ID and MURAL_CLIENT_SECRET in your environment."
     }
 

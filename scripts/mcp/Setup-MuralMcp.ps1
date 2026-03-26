@@ -36,78 +36,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
+#region Module Import
+Import-Module (Join-Path $PSScriptRoot 'Modules/MuralMcp.psm1') -Force
+#endregion Module Import
+
 #region Functions
-
-function Import-MuralCredentials {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$FilePath
-    )
-
-    if (-not (Test-Path -Path $FilePath -PathType Leaf)) {
-        return
-    }
-
-    foreach ($line in Get-Content -Path $FilePath) {
-        $trimmed = $line.Trim()
-        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
-            continue
-        }
-
-        if ($trimmed -match '^(?:export\s+)?(?<name>MURAL_CLIENT_ID|MURAL_CLIENT_SECRET)=(?<value>.+)$') {
-            $name = $Matches.name
-            $value = $Matches.value.Trim()
-            if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
-                $value = $value.Substring(1, $value.Length - 2)
-            }
-
-            Set-Item -Path Env:$name -Value $value
-        }
-    }
-}
-
-function Test-CommandAvailable {
-    [CmdletBinding()]
-    [OutputType([bool])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$CommandName
-    )
-
-    return $null -ne (Get-Command $CommandName -ErrorAction SilentlyContinue)
-}
-
-function Get-MuralTokenStatus {
-    [CmdletBinding()]
-    [OutputType([string])]
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$TokenFile
-    )
-
-    if (-not (Test-Path -Path $TokenFile -PathType Leaf)) {
-        return 'missing'
-    }
-
-    try {
-        $tokenData = Get-Content -Path $TokenFile -Raw | ConvertFrom-Json
-        $expiresAt = [double]$tokenData.expires_at
-        if ($expiresAt -le 0) {
-            return 'invalid'
-        }
-
-        $expiry = [DateTimeOffset]::FromUnixTimeMilliseconds([int64]$expiresAt)
-        if ($expiry -le [DateTimeOffset]::UtcNow.AddMinutes(1)) {
-            return 'expired'
-        }
-
-        return 'valid'
-    }
-    catch {
-        return 'invalid'
-    }
-}
 
 function Invoke-MuralSetup {
     [CmdletBinding()]
@@ -131,9 +64,9 @@ function Invoke-MuralSetup {
     $tokenFile = Join-Path $HOME '.mural-mcp/tokens.json'
 
     New-Item -ItemType Directory -Path $mcpRoot -Force | Out-Null
-    Import-MuralCredentials -FilePath $credentialsFile
+    Import-MuralCredentials -FilePath $credentialsFile -Force
 
-    if ([string]::IsNullOrWhiteSpace($env:MURAL_CLIENT_ID) -or [string]::IsNullOrWhiteSpace($env:MURAL_CLIENT_SECRET)) {
+    if (-not (Test-MuralCredentialsPresent)) {
         throw "Mural credentials are missing. Copy '.mural-credentials.example' to '.mural-credentials', fill in your Mural app credentials, then rerun this script."
     }
 
