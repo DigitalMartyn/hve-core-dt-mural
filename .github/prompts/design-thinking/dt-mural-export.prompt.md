@@ -67,25 +67,34 @@ Use this prompt after a team has produced Method 1, 3, 4, 5, or 6 artifacts that
    * Implication stickies: column width minus 40 padding, 150 tall, positioned below evidence rows with a 40-unit gap.
    * Circle stickies (HMW, open questions): 250 wide, 250 tall, evenly spaced horizontally within the footer area.
 
-   ### Color Scheme
+   ### Color Theme
 
-   Apply these colors using 8-character RGBA hex values.
+   Use the named color map below for all Mural widget colors. Values are 8-character RGBA hex as required by the Mural API.
 
-   **Area backgrounds (distinct pastel per section):**
-   * Header / Project Context: `#E3F2FDFF` (light blue)
-   * Theme column 1: `#E8EAF6FF` (lavender)
-   * Theme column 2: `#E0F2F1FF` (light teal)
-   * Theme column 3: `#FFF3E0FF` (light orange)
-   * Theme column 4: `#FCE4ECFF` (light pink)
-   * For additional columns, cycle through: `#F1F8E9FF` (light green), `#FFF8E1FF` (light amber), `#E0F7FAFF` (light cyan).
-   * Footer / HMW area: `#F3E5F5FF` (light purple)
+   | Name               | RGBA Hex     | Usage                                 |
+   |--------------------|--------------|---------------------------------------|
+   | area-header        | `#E3F2FDFF`  | Header / Project Context area         |
+   | area-theme-1       | `#E8EAF6FF`  | Theme column 1 (lavender)             |
+   | area-theme-2       | `#E0F2F1FF`  | Theme column 2 (teal)                 |
+   | area-theme-3       | `#FFF3E0FF`  | Theme column 3 (orange)               |
+   | area-theme-4       | `#FCE4ECFF`  | Theme column 4 (pink)                 |
+   | area-theme-extra-1 | `#F1F8E9FF`  | Overflow column (green)               |
+   | area-theme-extra-2 | `#FFF8E1FF`  | Overflow column (amber)               |
+   | area-theme-extra-3 | `#E0F7FAFF`  | Overflow column (cyan)                |
+   | area-footer        | `#F3E5F5FF`  | Footer / HMW area (purple)            |
+   | sticky-evidence    | `#FCFE7DFF`  | Evidence and facts (yellow)           |
+   | sticky-insight     | `#80D2FCFF`  | Implications and insights (blue)      |
+   | sticky-question    | `#8FD14FFF`  | HMW and open questions (green)        |
+   | sticky-decision    | `#F36DFFFF`  | Decisions and validation targets      |
+   | sticky-constraint  | `#FF9D48FF`  | Constraints and risks (orange)        |
 
-   **Sticky note backgrounds (by content type):**
-   * Evidence and facts: `#FCFE7DFF` (yellow, the default)
-   * Implications and insights: `#80D2FCFF` (blue)
-   * HMW questions and open questions: `#8FD14FFF` (green)
-   * Decisions and validation targets: `#F36DFFFF` (purple)
-   * Constraints and risks: `#FF9D48FF` (orange)
+   Cycle through `area-theme-extra-*` for columns beyond 4.
+
+   ### Accessibility
+
+   * All area backgrounds are pastel (high lightness). Use dark text (`#000000` or `#333333`) on these backgrounds for a contrast ratio above 4.5:1.
+   * Avoid placing light-colored text on `sticky-evidence` or `sticky-question` backgrounds. Mural defaults to dark text on stickies, which is correct.
+   * When creating text boxes on colored areas, do not override the default dark font color.
 
 6. Apply Method-Specific Layout:
    For Method 1, export request framing, stakeholder map, constraints, and open questions.
