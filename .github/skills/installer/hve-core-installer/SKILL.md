@@ -701,11 +701,12 @@ After the gitignore checkpoint (for **any** installation method), present MCP co
 
 Some HVE-Core agents integrate with external services via MCP (Model Context Protocol):
 
-| Agent                  | MCP Server               | Purpose                   |
-|------------------------|--------------------------|---------------------------|
-| ado-prd-to-wit         | ado                      | Azure DevOps work items   |
-| github-backlog-manager | github                   | GitHub backlog management |
-| task-researcher        | context7, microsoft-docs | Documentation lookup      |
+| Agent                  | MCP Server               | Purpose                          |
+|------------------------|--------------------------|----------------------------------|
+| ado-prd-to-wit         | ado                      | Azure DevOps work items          |
+| github-backlog-manager | github                   | GitHub backlog management        |
+| task-researcher        | context7, microsoft-docs | Documentation lookup             |
+| dt-coach               | mural                    | Mural board export for DT phases |
 
 Would you like to configure MCP servers? (yes/no)
 ```
@@ -726,12 +727,13 @@ If user chooses to configure MCP, present:
 ```text
 Which MCP servers would you like to configure?
 
-| Server         | Purpose                   | Recommended For            |
-|----------------|---------------------------|----------------------------|
-| github         | GitHub issues and repos   | GitHub-hosted repositories |
-| ado            | Azure DevOps work items   | Azure DevOps repositories  |
-| context7       | SDK/library documentation | All users (optional)       |
-| microsoft-docs | Microsoft Learn docs      | All users (optional)       |
+| Server         | Purpose                   | Recommended For                   |
+|----------------|---------------------------|-----------------------------------|
+| github         | GitHub issues and repos   | GitHub-hosted repositories        |
+| ado            | Azure DevOps work items   | Azure DevOps repositories         |
+| context7       | SDK/library documentation | All users (optional)              |
+| microsoft-docs | Microsoft Learn docs      | All users (optional)              |
+| mural          | Mural board export        | Design Thinking collection users  |
 
 ⚠️ Suggest EITHER github OR ado based on where your repo is hosted, not both.
 
@@ -810,6 +812,23 @@ Create `.vscode/mcp.json` using ONLY the templates below. Use HTTP type with man
 }
 ```
 
+#### mural server (stdio, requires setup)
+
+> [!NOTE]
+> The mural server requires a one-time setup step: `npm run mcp:setup:mural`.
+> This clones the mural-mcp repo, builds it, and runs the OAuth flow.
+> Users also need a `.mural-credentials` file with their Mural app credentials.
+
+```json
+{
+  "mural": {
+    "type": "stdio",
+    "command": "pwsh",
+    "args": ["-File", "./scripts/mcp/Start-MuralMcp.ps1"]
+  }
+}
+```
+
 ### MCP File Generation
 
 When creating `.vscode/mcp.json`:
@@ -818,6 +837,7 @@ When creating `.vscode/mcp.json`:
 2. Combine only the selected server configurations into a single JSON object
 3. Include `inputs` array only if `ado` server is selected
 4. Merge all selected servers under a single `servers` object
+5. If `mural` is selected, remind the user to run `npm run mcp:setup:mural` after installation
 
 Example combined configuration for "github, context7":
 
