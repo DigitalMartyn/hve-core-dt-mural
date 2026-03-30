@@ -1,121 +1,136 @@
----
-title: HVE Core
-description: Hypervelocity Engineering prompt library for GitHub Copilot with constraint-based AI workflows and validated artifacts
-author: Microsoft
-ms.date: 2026-03-22
-ms.topic: overview
-keywords:
-  - hypervelocity engineering
-  - prompt engineering
-  - github copilot
-  - ai workflows
-  - custom agents
-  - copilot instructions
-  - rpi methodology
-estimated_reading_time: 3
----
+# Mural MCP Integration for HVE Core Design Thinking
 
-<!-- markdownlint-disable MD013 -->
-[![CI Status](https://github.com/microsoft/hve-core/actions/workflows/release-stable.yml/badge.svg)](https://github.com/microsoft/hve-core/actions/workflows/release-stable.yml)
-[![CodeQL](https://github.com/microsoft/hve-core/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/microsoft/hve-core/actions/workflows/codeql-analysis.yml)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/microsoft/hve-core/badge)](https://scorecard.dev/viewer/?uri=github.com/microsoft/hve-core)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11795/badge)](https://www.bestpractices.dev/projects/11795)
-[![License](https://img.shields.io/github/license/microsoft/hve-core)](./LICENSE)
-[![Documentation](https://img.shields.io/badge/docs-microsoft.github.io%2Fhve--core-blue)](https://microsoft.github.io/hve-core/)
-<!-- markdownlint-enable MD013 -->
+Export Design Thinking artifacts from [microsoft/hve-core](https://github.com/microsoft/hve-core) to collaborative [Mural](https://www.mural.co/) boards using GitHub Copilot and the Model Context Protocol (MCP).
 
-Hypervelocity Engineering (HVE) Core gives you specialized agents, auto-applied coding instructions, reusable prompts, and validated skills for GitHub Copilot. Turn Copilot into a constraint-based engineering workflow that scales from solo developers to enterprise teams.
-
-> [!TIP]
-> Install from the VS Code Marketplace in under 30 seconds. See the [Installation Guide](docs/getting-started/install.md) for all options.
-
-## Quick Start
-
-1. Install the [HVE Core extension](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core) from the VS Code Marketplace.
-2. Open any project and launch GitHub Copilot Chat (`Ctrl+Alt+I`).
-3. Select an agent from the picker (try **rpi-agent**, **task-researcher**, or **memory**) and start a conversation.
-
-That's it. Agents, instructions, and prompts activate automatically once the extension is installed.
-
-Ready for more? Follow the [Getting Started Guide](docs/getting-started/README.md).
-
-## Choose Your Extension
-
-Two VS Code extensions serve different needs:
-
-| Extension                                                                                             | What it includes                                                | Best for                                                                |
-|-------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|-------------------------------------------------------------------------|
-| [HVE Core All](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-core-all)   | Every collection: all agents, prompts, instructions, and skills | Individual developers and teams that want the full library              |
-| [HVE Installer](https://marketplace.visualstudio.com/items?itemName=ise-hve-essentials.hve-installer) | Selective installation of specific collections                  | Teams that want to pick only the collections relevant to their workflow |
-
-Not sure which to choose? Start with HVE Core All. You can switch to HVE Installer later if you need finer control over which collections are active. See the [Collections Overview](docs/getting-started/collections.md) for a comparison of all available bundles.
+This repository contains the Mural MCP integration branch for the HVE Core Design Thinking collection. It adds a Copilot prompt, PowerShell MCP server scripts, and Pester tests that let you push DT coaching artifacts onto Mural boards directly from VS Code.
 
 ## What's Included
 
-| Component    | Count | Description                                                          | Documentation                                  |
-|--------------|-------|----------------------------------------------------------------------|------------------------------------------------|
-| Agents       | 49    | Specialized AI assistants for research, planning, and implementation | [Agents](.github/CUSTOM-AGENTS.md)             |
-| Instructions | 102   | Repository-specific coding guidelines applied automatically          | [Instructions](.github/instructions/README.md) |
-| Prompts      | 63    | Reusable templates for common tasks like commits and PRs             | [Prompts](.github/prompts/README.md)           |
-| Skills       | 11    | Self-contained packages with cross-platform scripts and guidance     | [Skills](.github/skills/)                      |
-| Scripts      | N/A   | Validation tools for linting, security, and quality                  | [Scripts](scripts/README.md)                   |
+| Path | Purpose |
+|------|---------|
+| `.github/prompts/design-thinking/dt-mural-export.prompt.md` | Copilot prompt for exporting DT artifacts to Mural |
+| `.github/agents/design-thinking/dt-coach.agent.md` | DT Coach agent updated with Mural export awareness |
+| `scripts/mcp/Setup-MuralMcp.ps1` | Clone, build, and authenticate the upstream Mural MCP server |
+| `scripts/mcp/Start-MuralMcp.ps1` | Launch the Mural MCP server for VS Code |
+| `scripts/mcp/Modules/MuralMcp.psm1` | Shared PowerShell module for Mural MCP operations |
+| `scripts/tests/mcp/MuralMcp.Tests.ps1` | Pester tests for the MCP module |
+| `docs/design-thinking/mural-export.md` | Full documentation |
+| `docs/getting-started/mcp-configuration.md` | MCP server configuration guide |
 
-## Documentation
+## Prerequisites
 
-Full documentation is available at **<https://microsoft.github.io/hve-core/>**.
+- [VS Code](https://code.visualstudio.com/) with [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+- [PowerShell 7+](https://github.com/PowerShell/PowerShell) (`pwsh`)
+- [Node.js](https://nodejs.org/) (for `npx`)
+- A [Mural](https://www.mural.co/) account with API access
+- A Mural OAuth app (Client ID and Client Secret)
 
-| Guide                                                            | Description                                     |
-|------------------------------------------------------------------|-------------------------------------------------|
-| [Getting Started](docs/getting-started/README.md)                | Setup and first workflow tutorial               |
-| [Collections](docs/getting-started/collections.md)               | Available bundles and selection guide           |
-| [RPI Workflow](docs/rpi/README.md)                               | Deep dive into Research, Plan, Implement        |
-| [Contributing](docs/contributing/README.md)                      | Create custom agents, instructions, and prompts |
-| [Agents Reference](.github/CUSTOM-AGENTS.md)                     | All available agents                            |
-| [Instructions Reference](.github/instructions/README.md)         | All coding instructions                         |
-| [AI Artifacts Architecture](docs/architecture/ai-artifacts.md)   | Prompt engineering framework and artifact types |
-| [Validation Standards](docs/contributing/ai-artifacts-common.md) | CI/CD validation pipeline and quality gates     |
+## Setup
 
-## Label Management
+### 1. Clone this repository
 
-Repository labels are declared in [`.github/labels.yml`](.github/labels.yml) and synced automatically by the [Label Sync](.github/workflows/label-sync.yml) workflow on push to `main` or via manual `workflow_dispatch`.
+```bash
+git clone https://github.com/DigitalMartyn/hve-core-dt-mural.git
+cd hve-core-dt-mural
+```
 
-| Task               | How                                                                                                                                                                                                 |
-|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Add a label**    | Add an entry with `name`, `color` (bare hex, no `#`), and `description` to `.github/labels.yml`, then push to `main`                                                                                |
-| **Update a label** | Edit the existing entry's `color` or `description`                                                                                                                                                  |
-| **Rename a label** | Add an `aliases` array under the new canonical name listing the old name; the sync migrates existing assignments automatically                                                                      |
-| **Delete a label** | Remove it manually in the [GitHub Labels UI](https://github.com/microsoft/hve-core/labels). Deleting an entry from the file does **not** delete it from GitHub (the workflow runs in additive mode) |
+### 2. Configure Mural credentials
+
+```bash
+cp .mural-credentials.example .mural-credentials
+```
+
+Edit `.mural-credentials` and add your Mural OAuth app values:
+
+```text
+MURAL_CLIENT_ID=your_client_id_here
+MURAL_CLIENT_SECRET=your_client_secret_here
+```
+
+### 3. Run the setup script
+
+```bash
+npm run mcp:setup:mural
+```
+
+This clones the upstream `mural-mcp` server, builds it, and runs the OAuth flow in your browser.
+
+### 4. Add the MCP server to VS Code
+
+Create or update `.vscode/mcp.json` in your workspace root:
+
+```json
+{
+  "servers": {
+    "mural": {
+      "type": "stdio",
+      "command": "pwsh",
+      "args": ["-File", "./scripts/mcp/Start-MuralMcp.ps1"]
+    }
+  }
+}
+```
+
+### 5. Restart VS Code
+
+The Mural MCP server should appear under **MCP Servers** in the VS Code sidebar.
+
+## Usage
+
+Open Copilot Chat and run the export prompt:
+
+```text
+/dt-mural-export project-slug=factory-floor-maintenance
+```
+
+With optional arguments:
+
+```text
+/dt-mural-export project-slug=customer-support-ai board-title="Stakeholder Map" method=1
+```
+
+The prompt reads DT artifacts from `.copilot-tracking/dt/{project-slug}/`, verifies the Mural MCP server is available, and creates sections, labels, and sticky notes on a Mural board.
+
+## Supported DT Methods
+
+| Method | What Gets Exported |
+|--------|--------------------|
+| 1 - Scope Conversations | Stakeholder maps, constraints, open questions |
+| 3 - Synthesis | Themes, evidence clusters, how-might-we prompts |
+| 4 - Brainstorming | Idea clusters, convergence candidates |
+| 5 - User Concepts | Concepts, evaluation notes, stakeholder reactions |
+| 6 - Low-Fidelity Prototypes | Prototype plans, build decisions, testing hypotheses |
+
+## Running Tests
+
+```bash
+pwsh -Command "Invoke-Pester ./scripts/tests/mcp/MuralMcp.Tests.ps1 -Output Detailed"
+```
+
+## Troubleshooting
+
+**Mural tools unavailable in Copilot Chat** — Check that `.vscode/mcp.json` includes the `mural` server entry and restart VS Code.
+
+**Authentication fails** — Re-run `npm run mcp:setup:mural`. The setup script detects expired tokens and restarts OAuth.
+
+**No DT artifacts found** — Confirm `.copilot-tracking/dt/{project-slug}/coaching-state.md` exists. Run DT coaching first to generate artifacts.
 
 ## Contributing
 
-We appreciate contributions! Whether you're fixing typos or adding new components:
+Contributions welcome. This integration is designed to merge upstream into [microsoft/hve-core](https://github.com/microsoft/hve-core) as part of the Design Thinking collection.
 
-1. Read our [Contributing Guide](CONTRIBUTING.md).
-2. Check out [open issues](https://github.com/microsoft/hve-core/issues).
-3. Join the [discussion](https://github.com/microsoft/hve-core/discussions).
+1. Fork this repo
+2. Create a feature branch
+3. Make your changes
+4. Open a pull request
 
-## Responsible AI
+## Related
 
-Microsoft encourages customers to review its Responsible AI Standard when developing AI-enabled systems to ensure ethical, safe, and inclusive AI practices. Learn more at [Microsoft's Responsible AI](https://www.microsoft.com/ai/responsible-ai).
+- [microsoft/hve-core](https://github.com/microsoft/hve-core) — Parent repository
+- [Mural](https://www.mural.co/) — Collaborative whiteboarding platform
+- [Model Context Protocol](https://modelcontextprotocol.io/) — MCP specification
 
-## Legal
+
+## License
 
 This project is licensed under the [MIT License](./LICENSE).
-
-See [SECURITY.md](./SECURITY.md) for the security policy and vulnerability reporting.
-
-See [GOVERNANCE.md](./GOVERNANCE.md) for the project governance model.
-
-## Trademark Notice
-
-> This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft
-> trademarks or logos is subject to and must follow Microsoft's Trademark & Brand Guidelines. Use of Microsoft trademarks or logos in
-> modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or
-> logos are subject to those third-party's policies.
-
----
-
-<!-- markdownlint-disable MD036 -->
-*🤖 Crafted with precision by ✨Copilot following brilliant human instruction,
-then carefully refined by our team of discerning human reviewers.*
-<!-- markdownlint-enable MD036 -->
